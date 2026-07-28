@@ -1,0 +1,273 @@
+{% extends "base.html" %}
+
+{% block title %}
+Dashboard | AquaSafe AI
+{% endblock %}
+
+{% block content %}
+
+<section class="py-5">
+
+    <div class="container">
+
+        <!-- Page Header -->
+        <div class="page-header d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
+
+            <div>
+
+                <h1 class="page-title">
+                    User Dashboard
+                </h1>
+
+                <p class="page-subtitle">
+                    Welcome back, {{ current_user.first_name }}.
+                    Manage your predictions and review your recent activity.
+                </p>
+
+            </div>
+
+            <a
+                href="{{ url_for('main.prediction') }}"
+                class="btn btn-primary"
+            >
+                <i class="fa-solid fa-microscope me-2"></i>
+                New Prediction
+            </a>
+
+        </div>
+
+        <!-- Account Summary -->
+        <div class="row g-4 mb-4">
+
+            <div class="col-md-4">
+
+                <div class="card stat-card">
+
+                    <div class="card-body d-flex align-items-center gap-3">
+
+                        <div class="stat-icon">
+                            <i class="fa-solid fa-user"></i>
+                        </div>
+
+                        <div>
+
+                            <p class="stat-label">
+                                User Name
+                            </p>
+
+                            <p class="stat-value fs-5">
+                                {{ current_user.first_name }}
+                                {{ current_user.last_name }}
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-md-4">
+
+                <div class="card stat-card">
+
+                    <div class="card-body d-flex align-items-center gap-3">
+
+                        <div class="stat-icon">
+                            <i class="fa-solid fa-envelope"></i>
+                        </div>
+
+                        <div class="overflow-hidden">
+
+                            <p class="stat-label">
+                                Email Address
+                            </p>
+
+                            <p class="stat-value fs-6 text-break">
+                                {{ current_user.email }}
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-md-4">
+
+                <div class="card stat-card">
+
+                    <div class="card-body d-flex align-items-center gap-3">
+
+                        <div class="stat-icon">
+                            <i class="fa-solid fa-shield-halved"></i>
+                        </div>
+
+                        <div>
+
+                            <p class="stat-label">
+                                Account Role
+                            </p>
+
+                            <p class="stat-value fs-5">
+                                {{ current_user.role }}
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Main Dashboard Content -->
+        <div class="row g-4">
+
+            <!-- Quick Actions -->
+            <div class="col-lg-8">
+
+                <div class="card h-100">
+
+                    <div class="card-header bg-white">
+
+                        <h2 class="h5 fw-bold mb-1">
+                            <i class="fa-solid fa-bolt text-primary me-2"></i>
+                            Quick Actions
+                        </h2>
+
+                        <p class="text-muted small mb-0">
+                            Access the main features of AquaSafe AI.
+                        </p>
+
+                    </div>
+
+                    <div class="card-body">
+
+                        <div class="row g-3">
+
+                            <div class="col-md-6">
+
+                                <a
+                                    href="{{ url_for('main.prediction') }}"
+                                    class="text-decoration-none"
+                                >
+
+                                    <div class="card h-100 border">
+
+                                        <div class="card-body">
+
+                                            <div class="stat-icon mb-3">
+                                                <i class="fa-solid fa-microscope"></i>
+                                            </div>
+
+                                            <h3 class="h5 fw-bold text-dark">
+                                                Create Prediction
+                                            </h3>
+
+                                            <p class="text-muted mb-0">
+                                                Enter water quality, environmental,
+                                                and socioeconomic values to assess
+                                                disease risk.
+                                            </p>
+
+                                        </div>
+
+                                    </div>
+
+                                </a>
+
+                            </div>
+
+                            <div class="col-md-6">
+
+                                <a
+                                    href="{{ url_for('main.prediction_history') }}"
+                                    class="text-decoration-none"
+                                >
+
+                                    <div class="card h-100 border">
+
+                                        <div class="card-body">
+
+                                            <div class="stat-icon mb-3">
+                                                <i class="fa-solid fa-clock-rotate-left"></i>
+                                            </div>
+
+                                            <h3 class="h5 fw-bold text-dark">
+                                                View History
+                                            </h3>
+
+                                            <p class="text-muted mb-0">
+                                                Review previous predictions,
+                                                confidence scores, risk levels,
+                                                and detailed reports.
+                                            </p>
+
+                                        </div>
+
+                                    </div>
+
+                                </a>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- System Information -->
+            <div class="col-lg-4">
+
+                <div class="card h-100">
+
+                    <div class="card-header bg-white">
+
+                        <h2 class="h5 fw-bold mb-1">
+                            <i class="fa-solid fa-circle-info text-primary me-2"></i>
+                            About the System
+                        </h2>
+
+                    </div>
+
+                    <div class="card-body">
+
+                        <p class="text-muted">
+                            AquaSafe AI uses machine-learning techniques to
+                            estimate waterborne disease risk based on selected
+                            water quality, environmental, and socioeconomic
+                            indicators.
+                        </p>
+
+                        <div class="alert alert-info mb-0">
+
+                            <i class="fa-solid fa-triangle-exclamation me-2"></i>
+
+                            Predictions are intended for decision support and
+                            should not replace professional medical or
+                            environmental assessment.
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

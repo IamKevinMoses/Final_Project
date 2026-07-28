@@ -1,0 +1,201 @@
+{% extends "base.html" %}
+
+{% block title %}
+Login | AquaSafe AI
+{% endblock %}
+
+{% block content %}
+
+<section class="auth-section">
+
+    <div class="container">
+
+        <div class="auth-card">
+
+            <div class="card">
+
+                <div class="card-body p-4 p-md-5">
+
+                    <div class="text-center mb-4">
+
+                        <div class="auth-icon">
+                            <i class="fa-solid fa-right-to-bracket"></i>
+                        </div>
+
+                        <h1 class="h3 fw-bold mb-2">
+                            Welcome Back
+                        </h1>
+
+                        <p class="text-muted mb-0">
+                            Sign in to access your AquaSafe AI account.
+                        </p>
+
+                    </div>
+
+                    <form method="POST">
+
+                        <div class="mb-3">
+
+                            <label
+                                for="email"
+                                class="form-label"
+                            >
+                                Email Address
+                            </label>
+
+                            <div class="input-group">
+
+                                <span class="input-group-text">
+                                    <i class="fa-solid fa-envelope"></i>
+                                </span>
+
+                                <input
+                                    type="email"
+                                    id="email"
+                                    name="email"
+                                    class="form-control"
+                                    placeholder="Enter your email address"
+                                    required
+                                    autocomplete="email"
+                                    autofocus
+                                >
+
+                            </div>
+
+                        </div>
+
+                        <div class="mb-2">
+
+                            <label
+                                for="password"
+                                class="form-label"
+                            >
+                                Password
+                            </label>
+
+                            <div class="input-group">
+
+                                <span class="input-group-text">
+                                    <i class="fa-solid fa-lock"></i>
+                                </span>
+
+                                <input
+                                    type="password"
+                                    id="password"
+                                    name="password"
+                                    class="form-control"
+                                    placeholder="Enter your password"
+                                    required
+                                    autocomplete="current-password"
+                                >
+
+                                <button
+                                    type="button"
+                                    class="btn btn-outline-secondary"
+                                    id="togglePassword"
+                                    aria-label="Show or hide password"
+                                >
+                                    <i
+                                        class="fa-solid fa-eye"
+                                        id="togglePasswordIcon"
+                                    ></i>
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                        <div class="text-end mb-4">
+
+                            <a
+                                href="{{ url_for('main.forgot_password') }}"
+                                class="text-decoration-none"
+                            >
+                                Forgot password?
+                            </a>
+
+                        </div>
+
+                        <button
+                            type="submit"
+                            class="btn btn-primary btn-lg w-100"
+                        >
+                            <i class="fa-solid fa-right-to-bracket me-2"></i>
+                            Login
+                        </button>
+
+                    </form>
+
+                    <div class="text-center mt-4">
+
+                        <p class="text-muted mb-0">
+                            Don’t have an account?
+
+                            <a
+                                href="{{ url_for('main.register') }}"
+                                class="fw-semibold text-decoration-none"
+                            >
+                                Create an account
+                            </a>
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <p class="text-center text-muted small mt-3 mb-0">
+                Secure access to waterborne disease risk prediction
+                and decision-support features.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+
+<script>
+    const togglePasswordButton =
+        document.getElementById("togglePassword");
+
+    const passwordInput =
+        document.getElementById("password");
+
+    const togglePasswordIcon =
+        document.getElementById("togglePasswordIcon");
+
+    if (
+        togglePasswordButton &&
+        passwordInput &&
+        togglePasswordIcon
+    ) {
+        togglePasswordButton.addEventListener(
+            "click",
+            function () {
+                const passwordIsHidden =
+                    passwordInput.type === "password";
+
+                passwordInput.type =
+                    passwordIsHidden ? "text" : "password";
+
+                togglePasswordIcon.classList.toggle(
+                    "fa-eye",
+                    !passwordIsHidden
+                );
+
+                togglePasswordIcon.classList.toggle(
+                    "fa-eye-slash",
+                    passwordIsHidden
+                );
+            }
+        );
+    }
+</script>
+
+{% endblock %}

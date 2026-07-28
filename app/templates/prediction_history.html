@@ -1,0 +1,499 @@
+{% extends "base.html" %}
+
+{% block title %}
+Prediction History | AquaSafe AI
+{% endblock %}
+
+{% block content %}
+
+<section class="py-5">
+
+    <div class="container">
+
+        <!-- Page Header -->
+        <div class="page-header d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
+
+            <div>
+
+                <h1 class="page-title">
+                    Prediction History
+                </h1>
+
+                <p class="page-subtitle">
+                    View, filter, export, and review your previous disease-risk predictions.
+                </p>
+
+            </div>
+
+            <div class="d-flex flex-column flex-sm-row gap-2">
+
+                <a
+                    href="{{ url_for(
+                        'main.export_prediction_history',
+                        country=selected_country,
+                        risk_level=selected_risk
+                    ) }}"
+                    class="btn btn-success"
+                >
+                    <i class="fa-solid fa-file-csv me-2"></i>
+                    Export CSV
+                </a>
+
+                <a
+                    href="{{ url_for('main.prediction') }}"
+                    class="btn btn-primary"
+                >
+                    <i class="fa-solid fa-plus me-2"></i>
+                    New Prediction
+                </a>
+
+            </div>
+
+        </div>
+
+        <!-- Filter Section -->
+        <div class="card mb-4">
+
+            <div class="card-header bg-white">
+
+                <h2 class="h5 fw-bold mb-1">
+                    <i class="fa-solid fa-filter text-primary me-2"></i>
+                    Filter Records
+                </h2>
+
+                <p class="text-muted small mb-0">
+                    Narrow the results by country or predicted risk level.
+                </p>
+
+            </div>
+
+            <div class="card-body">
+
+                <form
+                    method="GET"
+                    action="{{ url_for('main.prediction_history') }}"
+                >
+
+                    <div class="row g-3 align-items-end">
+
+                        <div class="col-md-4">
+
+                            <label
+                                for="country"
+                                class="form-label"
+                            >
+                                Country
+                            </label>
+
+                            <select
+                                id="country"
+                                name="country"
+                                class="form-select"
+                            >
+
+                                <option value="">
+                                    All Countries
+                                </option>
+
+                                {% for country in countries %}
+
+                                    <option
+                                        value="{{ country }}"
+                                        {% if selected_country == country %}
+                                            selected
+                                        {% endif %}
+                                    >
+                                        {{ country }}
+                                    </option>
+
+                                {% endfor %}
+
+                            </select>
+
+                        </div>
+
+                        <div class="col-md-4">
+
+                            <label
+                                for="risk_level"
+                                class="form-label"
+                            >
+                                Risk Level
+                            </label>
+
+                            <select
+                                id="risk_level"
+                                name="risk_level"
+                                class="form-select"
+                            >
+
+                                <option value="">
+                                    All Risk Levels
+                                </option>
+
+                                <option
+                                    value="High"
+                                    {% if selected_risk == "High" %}
+                                        selected
+                                    {% endif %}
+                                >
+                                    High
+                                </option>
+
+                                <option
+                                    value="Medium"
+                                    {% if selected_risk == "Medium" %}
+                                        selected
+                                    {% endif %}
+                                >
+                                    Medium
+                                </option>
+
+                                <option
+                                    value="Low"
+                                    {% if selected_risk == "Low" %}
+                                        selected
+                                    {% endif %}
+                                >
+                                    Low
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                        <div class="col-md-4">
+
+                            <div class="d-flex gap-2">
+
+                                <button
+                                    type="submit"
+                                    class="btn btn-primary flex-fill"
+                                >
+                                    <i class="fa-solid fa-filter me-2"></i>
+                                    Apply
+                                </button>
+
+                                <a
+                                    href="{{ url_for('main.prediction_history') }}"
+                                    class="btn btn-outline-secondary flex-fill"
+                                >
+                                    <i class="fa-solid fa-rotate-left me-2"></i>
+                                    Reset
+                                </a>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+        <!-- Result Count -->
+        <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2 mb-3">
+
+            <p class="text-muted mb-0">
+
+                <i class="fa-solid fa-database me-2"></i>
+
+                <strong>{{ predictions | length }}</strong>
+
+                {% if predictions | length == 1 %}
+                    record found
+                {% else %}
+                    records found
+                {% endif %}
+
+            </p>
+
+            {% if selected_country or selected_risk %}
+
+                <div class="d-flex flex-wrap gap-2">
+
+                    {% if selected_country %}
+
+                        <span class="badge text-bg-light border">
+                            Country: {{ selected_country }}
+                        </span>
+
+                    {% endif %}
+
+                    {% if selected_risk %}
+
+                        <span class="badge text-bg-light border">
+                            Risk: {{ selected_risk }}
+                        </span>
+
+                    {% endif %}
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+        {% if predictions %}
+
+            <!-- History Table -->
+            <div class="card">
+
+                <div class="card-body p-0">
+
+                    <div class="table-responsive">
+
+                        <table class="table table-hover align-middle mb-0">
+
+                            <thead class="table-dark">
+
+                                <tr>
+
+                                    <th scope="col">
+                                        Date
+                                    </th>
+
+                                    <th scope="col">
+                                        Country
+                                    </th>
+
+                                    <th scope="col">
+                                        Region
+                                    </th>
+
+                                    <th scope="col">
+                                        Risk Level
+                                    </th>
+
+                                    <th scope="col">
+                                        Confidence
+                                    </th>
+
+                                    <th scope="col">
+                                        Priority
+                                    </th>
+
+                                    <th
+                                        scope="col"
+                                        class="text-center"
+                                    >
+                                        Action
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+                            <tbody>
+
+                                {% for prediction in predictions %}
+
+                                    <tr>
+
+                                        <td class="text-nowrap">
+
+                                            <div class="fw-semibold">
+                                                {{
+                                                    prediction.prediction_date.strftime(
+                                                        "%d-%m-%Y"
+                                                    )
+                                                }}
+                                            </div>
+
+                                            <small class="text-muted">
+                                                {{
+                                                    prediction.prediction_date.strftime(
+                                                        "%H:%M"
+                                                    )
+                                                }}
+                                            </small>
+
+                                        </td>
+
+                                        <td>
+                                            <i class="fa-solid fa-earth-asia text-primary me-2"></i>
+                                            {{ prediction.country }}
+                                        </td>
+
+                                        <td>
+                                            {{ prediction.region }}
+                                        </td>
+
+                                        <td>
+
+                                            {% if prediction.prediction == "High" %}
+
+                                                <span class="badge rounded-pill text-bg-danger">
+
+                                                    <i class="fa-solid fa-triangle-exclamation me-1"></i>
+                                                    High
+
+                                                </span>
+
+                                            {% elif prediction.prediction == "Medium" %}
+
+                                                <span class="badge rounded-pill text-bg-warning text-dark">
+
+                                                    <i class="fa-solid fa-circle-exclamation me-1"></i>
+                                                    Medium
+
+                                                </span>
+
+                                            {% else %}
+
+                                                <span class="badge rounded-pill text-bg-success">
+
+                                                    <i class="fa-solid fa-circle-check me-1"></i>
+                                                    Low
+
+                                                </span>
+
+                                            {% endif %}
+
+                                        </td>
+
+                                        <td style="min-width: 150px;">
+
+                                            <div class="d-flex justify-content-between mb-1">
+
+                                                <span class="fw-semibold">
+                                                    {{
+                                                        "%.2f" | format(
+                                                            prediction.confidence
+                                                        )
+                                                    }}%
+                                                </span>
+
+                                            </div>
+
+                                            <div
+                                                class="progress"
+                                                role="progressbar"
+                                                aria-label="Prediction confidence"
+                                                aria-valuenow="{{ prediction.confidence }}"
+                                                aria-valuemin="0"
+                                                aria-valuemax="100"
+                                                style="height: 7px;"
+                                            >
+
+                                                <div
+                                                    class="progress-bar dynamic-progress"
+                                                    style="--progress-width: {{ prediction.confidence }}%;"
+                                                ></div>
+
+                                            </div>
+
+                                        </td>
+
+                                        <td>
+
+                                            {% if prediction.priority == "Urgent" %}
+
+                                                <span class="badge text-bg-danger">
+                                                    Urgent
+                                                </span>
+
+                                            {% elif prediction.priority == "High" %}
+
+                                                <span class="badge text-bg-warning text-dark">
+                                                    High
+                                                </span>
+
+                                            {% elif prediction.priority == "Moderate" %}
+
+                                                <span class="badge text-bg-info">
+                                                    Moderate
+                                                </span>
+
+                                            {% else %}
+
+                                                <span class="badge text-bg-secondary">
+                                                    {{ prediction.priority }}
+                                                </span>
+
+                                            {% endif %}
+
+                                        </td>
+
+                                        <td class="text-center text-nowrap">
+
+                                            <a
+                                                href="{{ url_for(
+                                                    'main.prediction_details',
+                                                    prediction_id=prediction.id
+                                                ) }}"
+                                                class="btn btn-sm btn-outline-primary"
+                                            >
+                                                <i class="fa-solid fa-eye me-1"></i>
+                                                View Details
+                                            </a>
+
+                                        </td>
+
+                                    </tr>
+
+                                {% endfor %}
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        {% else %}
+
+            <!-- Empty Results -->
+            <div class="card">
+
+                <div class="card-body text-center py-5">
+
+                    <div class="stat-icon mx-auto mb-3">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </div>
+
+                    <h2 class="h4 fw-bold">
+                        No matching records found
+                    </h2>
+
+                    <p class="text-muted mb-4">
+                        No predictions match the selected filters.
+                        Change or reset the filters and try again.
+                    </p>
+
+                    <a
+                        href="{{ url_for('main.prediction_history') }}"
+                        class="btn btn-primary"
+                    >
+                        <i class="fa-solid fa-rotate-left me-2"></i>
+                        Reset Filters
+                    </a>
+
+                </div>
+
+            </div>
+
+        {% endif %}
+
+        <!-- Disclaimer -->
+        <div class="alert alert-warning mt-4 mb-0">
+
+            <i class="fa-solid fa-circle-info me-2"></i>
+
+            Prediction results are produced by a machine-learning model
+            for academic and decision-support purposes. They should not
+            be treated as a medical diagnosis.
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

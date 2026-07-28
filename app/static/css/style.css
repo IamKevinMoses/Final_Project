@@ -1,0 +1,430 @@
+/* ================================
+   AquaSafe AI Global Design
+================================ */
+
+:root {
+    --aquasafe-primary: #0d6efd;
+    --aquasafe-primary-dark: #084298;
+    --aquasafe-secondary: #0ea5e9;
+    --aquasafe-background: #f4f7fb;
+    --aquasafe-surface: #ffffff;
+    --aquasafe-text: #1e293b;
+    --aquasafe-muted: #64748b;
+    --aquasafe-border: #dbe3ec;
+    --aquasafe-footer: #0f172a;
+    --aquasafe-radius: 14px;
+    --aquasafe-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+}
+
+/* Main layout */
+
+html,
+body {
+    height: 100%;
+}
+
+body.aquasafe-body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background:
+        radial-gradient(
+            circle at top right,
+            rgba(14, 165, 233, 0.08),
+            transparent 28%
+        ),
+        var(--aquasafe-background);
+    color: var(--aquasafe-text);
+    font-family:
+        Inter,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+}
+
+.main-content {
+    flex: 1;
+}
+
+/* Navigation */
+
+.aquasafe-navbar {
+    background:
+        linear-gradient(
+            135deg,
+            var(--aquasafe-primary-dark),
+            var(--aquasafe-primary),
+            var(--aquasafe-secondary)
+        );
+    padding-top: 0.8rem;
+    padding-bottom: 0.8rem;
+}
+
+.navbar-brand {
+    line-height: 1.15;
+}
+
+.brand-icon {
+    width: 44px;
+    height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.16);
+    border-radius: 12px;
+    font-size: 1.35rem;
+}
+
+.brand-subtitle {
+    color: rgba(255, 255, 255, 0.72);
+    font-size: 0.72rem;
+}
+
+.aquasafe-navbar .nav-link {
+    color: rgba(255, 255, 255, 0.82);
+    border-radius: 8px;
+    padding: 0.55rem 0.75rem;
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease;
+}
+
+.aquasafe-navbar .nav-link:hover,
+.aquasafe-navbar .nav-link.active {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.14);
+}
+
+.user-avatar {
+    width: 28px;
+    height: 28px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.18);
+    border-radius: 50%;
+}
+
+/* Flash messages */
+
+.flash-container {
+    margin-top: 1.25rem;
+}
+
+.alert {
+    border: 0;
+    border-radius: 12px;
+}
+
+/* Shared page heading */
+
+.page-header {
+    margin-bottom: 2rem;
+}
+
+.page-title {
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+    color: var(--aquasafe-text);
+}
+
+.page-subtitle {
+    color: var(--aquasafe-muted);
+    margin-bottom: 0;
+}
+
+/* Cards */
+
+.card {
+    border: 1px solid rgba(219, 227, 236, 0.8);
+    border-radius: var(--aquasafe-radius);
+    box-shadow: var(--aquasafe-shadow);
+    overflow: hidden;
+}
+
+.card-header {
+    border-bottom: 1px solid rgba(219, 227, 236, 0.8);
+    padding: 1rem 1.25rem;
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+/* Forms */
+
+.form-label {
+    font-weight: 600;
+    color: #334155;
+    margin-bottom: 0.45rem;
+}
+
+.form-control,
+.form-select {
+    min-height: 46px;
+    border: 1px solid var(--aquasafe-border);
+    border-radius: 10px;
+    padding: 0.65rem 0.85rem;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--aquasafe-primary);
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.14);
+}
+
+.input-group .form-control {
+    border-radius: 10px 0 0 10px;
+}
+
+.input-group-text {
+    border-color: var(--aquasafe-border);
+    background: #f8fafc;
+    color: var(--aquasafe-muted);
+    border-radius: 0 10px 10px 0;
+}
+
+.form-text {
+    color: var(--aquasafe-muted);
+}
+
+/* Buttons */
+
+.btn {
+    border-radius: 10px;
+    font-weight: 600;
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        background-color 0.2s ease;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+}
+
+.btn-primary {
+    background:
+        linear-gradient(
+            135deg,
+            var(--aquasafe-primary),
+            var(--aquasafe-secondary)
+        );
+    border: 0;
+    box-shadow: 0 6px 16px rgba(13, 110, 253, 0.2);
+}
+
+.btn-primary:hover {
+    box-shadow: 0 8px 20px rgba(13, 110, 253, 0.3);
+}
+
+.btn-lg {
+    min-height: 50px;
+}
+
+/* Tables */
+
+.table-responsive {
+    border-radius: var(--aquasafe-radius);
+}
+
+.table {
+    margin-bottom: 0;
+}
+
+.table thead th {
+    background: #eef4fb;
+    color: #334155;
+    font-weight: 700;
+    border-bottom: 0;
+    white-space: nowrap;
+}
+
+.table td,
+.table th {
+    padding: 0.9rem 1rem;
+    vertical-align: middle;
+}
+
+/* Status badges */
+
+.risk-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 80px;
+    padding: 0.4rem 0.7rem;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 700;
+}
+
+.risk-high {
+    color: #991b1b;
+    background: #fee2e2;
+}
+
+.risk-medium {
+    color: #92400e;
+    background: #fef3c7;
+}
+
+.risk-low {
+    color: #166534;
+    background: #dcfce7;
+}
+
+/* Dashboard statistic cards */
+
+.stat-card {
+    height: 100%;
+    background: var(--aquasafe-surface);
+}
+
+.stat-icon {
+    width: 52px;
+    height: 52px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+    background: rgba(13, 110, 253, 0.1);
+    color: var(--aquasafe-primary);
+    font-size: 1.35rem;
+}
+
+.stat-label {
+    color: var(--aquasafe-muted);
+    margin-bottom: 0.2rem;
+}
+
+.stat-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 0;
+}
+
+/* Authentication pages */
+
+.auth-section {
+    min-height: calc(100vh - 240px);
+    display: flex;
+    align-items: center;
+    padding: 3rem 0;
+}
+
+.auth-card {
+    max-width: 480px;
+    margin: 0 auto;
+}
+
+.auth-icon {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 18px;
+    color: #ffffff;
+    background:
+        linear-gradient(
+            135deg,
+            var(--aquasafe-primary),
+            var(--aquasafe-secondary)
+        );
+    font-size: 1.6rem;
+}
+
+/* Progress bars */
+
+.progress {
+    height: 22px;
+    border-radius: 999px;
+    background: #e9eef5;
+}
+
+.progress-bar {
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.dynamic-progress {
+    width: var(--progress-width);
+}
+
+/* Empty states */
+
+.empty-state {
+    padding: 3rem 1rem;
+    text-align: center;
+    color: var(--aquasafe-muted);
+}
+
+.empty-state-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: #94a3b8;
+}
+
+/* Footer */
+
+.aquasafe-footer {
+    margin-top: 3rem;
+    padding: 2rem 0;
+    background: var(--aquasafe-footer);
+    color: #ffffff;
+}
+
+.footer-description,
+.footer-secondary {
+    color: #94a3b8;
+}
+
+.footer-divider {
+    border-color: rgba(255, 255, 255, 0.12);
+    margin: 1.5rem 0;
+}
+
+/* Printing */
+
+@media print {
+    .aquasafe-navbar,
+    .aquasafe-footer,
+    .flash-container,
+    .no-print {
+        display: none !important;
+    }
+
+    body.aquasafe-body {
+        background: #ffffff;
+    }
+
+    .card {
+        box-shadow: none;
+    }
+}
+
+/* Mobile responsiveness */
+
+@media (max-width: 767.98px) {
+    .brand-subtitle {
+        display: none;
+    }
+
+    .card-body {
+        padding: 1.1rem;
+    }
+
+    .page-title {
+        font-size: 1.8rem;
+    }
+
+    .table td,
+    .table th {
+        padding: 0.7rem;
+    }
+}

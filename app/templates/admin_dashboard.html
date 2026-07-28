@@ -1,0 +1,841 @@
+{% extends "base.html" %}
+
+{% block title %}
+Admin Dashboard | AquaSafe AI
+{% endblock %}
+
+{% block extra_css %}
+
+<style>
+    .admin-stat-card {
+        height: 100%;
+        border: 0;
+        border-left: 4px solid transparent;
+    }
+
+    .admin-stat-card.users {
+        border-left-color: #0d6efd;
+    }
+
+    .admin-stat-card.predictions {
+        border-left-color: #6610f2;
+    }
+
+    .admin-stat-card.high-risk {
+        border-left-color: #dc3545;
+    }
+
+    .admin-stat-card.medium-risk {
+        border-left-color: #ffc107;
+    }
+
+    .admin-stat-card.low-risk {
+        border-left-color: #198754;
+    }
+
+    .admin-stat-icon {
+        width: 52px;
+        height: 52px;
+        min-width: 52px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 14px;
+        font-size: 1.35rem;
+    }
+
+    .admin-stat-number {
+        font-size: 2rem;
+        font-weight: 800;
+        line-height: 1;
+        margin-bottom: 0;
+    }
+
+    .chart-container {
+        position: relative;
+        height: 320px;
+    }
+
+    .admin-user-avatar {
+        width: 38px;
+        height: 38px;
+        min-width: 38px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        font-weight: 700;
+    }
+
+    @media (max-width: 576px) {
+        .chart-container {
+            height: 260px;
+        }
+    }
+</style>
+
+{% endblock %}
+
+{% block content %}
+
+<section class="py-5">
+
+    <div class="container">
+
+        <!-- Page Header -->
+        <div class="page-header d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
+
+            <div>
+
+                <h1 class="page-title">
+                    Admin Dashboard
+                </h1>
+
+                <p class="page-subtitle">
+                    Welcome back, {{ current_user.first_name }}.
+                    Monitor users, prediction activity, and risk results.
+                </p>
+
+            </div>
+
+            <div class="d-flex flex-column flex-sm-row gap-2">
+
+                <a
+                    href="{{ url_for('main.prediction') }}"
+                    class="btn btn-primary"
+                >
+                    <i class="fa-solid fa-plus me-2"></i>
+                    New Prediction
+                </a>
+
+                <a
+                    href="{{ url_for('main.prediction_history') }}"
+                    class="btn btn-outline-secondary"
+                >
+                    <i class="fa-solid fa-clock-rotate-left me-2"></i>
+                    Prediction History
+                </a>
+
+            </div>
+
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="row g-4 mb-4">
+
+            <div class="col-sm-6 col-xl">
+
+                <div class="card admin-stat-card users">
+
+                    <div class="card-body">
+
+                        <div class="d-flex align-items-center justify-content-between gap-3">
+
+                            <div>
+
+                                <p class="text-muted text-uppercase small fw-semibold mb-2">
+                                    Total Users
+                                </p>
+
+                                <p class="admin-stat-number text-primary">
+                                    {{ total_users }}
+                                </p>
+
+                            </div>
+
+                            <div class="admin-stat-icon bg-primary-subtle text-primary">
+                                <i class="fa-solid fa-users"></i>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-sm-6 col-xl">
+
+                <div class="card admin-stat-card predictions">
+
+                    <div class="card-body">
+
+                        <div class="d-flex align-items-center justify-content-between gap-3">
+
+                            <div>
+
+                                <p class="text-muted text-uppercase small fw-semibold mb-2">
+                                    Predictions
+                                </p>
+
+                                <p class="admin-stat-number text-primary">
+                                    {{ total_predictions }}
+                                </p>
+
+                            </div>
+
+                            <div class="admin-stat-icon bg-primary-subtle text-primary">
+                                <i class="fa-solid fa-chart-line"></i>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-sm-6 col-xl">
+
+                <div class="card admin-stat-card high-risk">
+
+                    <div class="card-body">
+
+                        <div class="d-flex align-items-center justify-content-between gap-3">
+
+                            <div>
+
+                                <p class="text-muted text-uppercase small fw-semibold mb-2">
+                                    High Risk
+                                </p>
+
+                                <p class="admin-stat-number text-danger">
+                                    {{ high_count }}
+                                </p>
+
+                            </div>
+
+                            <div class="admin-stat-icon bg-danger-subtle text-danger">
+                                <i class="fa-solid fa-triangle-exclamation"></i>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-sm-6 col-xl">
+
+                <div class="card admin-stat-card medium-risk">
+
+                    <div class="card-body">
+
+                        <div class="d-flex align-items-center justify-content-between gap-3">
+
+                            <div>
+
+                                <p class="text-muted text-uppercase small fw-semibold mb-2">
+                                    Medium Risk
+                                </p>
+
+                                <p class="admin-stat-number text-warning">
+                                    {{ medium_count }}
+                                </p>
+
+                            </div>
+
+                            <div class="admin-stat-icon bg-warning-subtle text-warning">
+                                <i class="fa-solid fa-circle-exclamation"></i>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-sm-6 col-xl">
+
+                <div class="card admin-stat-card low-risk">
+
+                    <div class="card-body">
+
+                        <div class="d-flex align-items-center justify-content-between gap-3">
+
+                            <div>
+
+                                <p class="text-muted text-uppercase small fw-semibold mb-2">
+                                    Low Risk
+                                </p>
+
+                                <p class="admin-stat-number text-success">
+                                    {{ low_count }}
+                                </p>
+
+                            </div>
+
+                            <div class="admin-stat-icon bg-success-subtle text-success">
+                                <i class="fa-solid fa-circle-check"></i>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Charts -->
+        <div class="row g-4 mb-4">
+
+            <div class="col-lg-5">
+
+                <div class="card h-100">
+
+                    <div class="card-header bg-white">
+
+                        <h2 class="h5 fw-bold mb-1">
+                            <i class="fa-solid fa-chart-pie text-primary me-2"></i>
+                            Risk Distribution
+                        </h2>
+
+                        <p class="text-muted small mb-0">
+                            Distribution of high, medium, and low-risk predictions.
+                        </p>
+
+                    </div>
+
+                    <div class="card-body">
+
+                        {% if total_predictions > 0 %}
+
+                            <div class="chart-container">
+                                <canvas id="riskChart"></canvas>
+                            </div>
+
+                        {% else %}
+
+                            <div class="text-center py-5">
+
+                                <div class="stat-icon mx-auto mb-3">
+                                    <i class="fa-solid fa-chart-pie"></i>
+                                </div>
+
+                                <h3 class="h6 fw-bold">
+                                    No chart data available
+                                </h3>
+
+                                <p class="text-muted small mb-0">
+                                    Risk distribution will appear after predictions are created.
+                                </p>
+
+                            </div>
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-7">
+
+                <div class="card h-100">
+
+                    <div class="card-header bg-white">
+
+                        <h2 class="h5 fw-bold mb-1">
+                            <i class="fa-solid fa-earth-asia text-primary me-2"></i>
+                            Predictions by Country
+                        </h2>
+
+                        <p class="text-muted small mb-0">
+                            Number of saved prediction records for each country.
+                        </p>
+
+                    </div>
+
+                    <div class="card-body">
+
+                        {% if total_predictions > 0 %}
+
+                            <div class="chart-container">
+                                <canvas id="countryChart"></canvas>
+                            </div>
+
+                        {% else %}
+
+                            <div class="text-center py-5">
+
+                                <div class="stat-icon mx-auto mb-3">
+                                    <i class="fa-solid fa-earth-asia"></i>
+                                </div>
+
+                                <h3 class="h6 fw-bold">
+                                    No country data available
+                                </h3>
+
+                                <p class="text-muted small mb-0">
+                                    Country statistics will appear after predictions are submitted.
+                                </p>
+
+                            </div>
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Recent Predictions -->
+        <div class="card">
+
+            <div class="card-header bg-white">
+
+                <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3">
+
+                    <div>
+
+                        <h2 class="h5 fw-bold mb-1">
+                            <i class="fa-solid fa-clock-rotate-left text-primary me-2"></i>
+                            Recent Predictions
+                        </h2>
+
+                        <p class="text-muted small mb-0">
+                            The ten most recent predictions submitted by users.
+                        </p>
+
+                    </div>
+
+                    <span class="badge text-bg-light border">
+                        {{ recent_predictions | length }} records
+                    </span>
+
+                </div>
+
+            </div>
+
+            {% if recent_predictions %}
+
+                <div class="card-body p-0">
+
+                    <div class="table-responsive">
+
+                        <table class="table table-hover align-middle mb-0">
+
+                            <thead class="table-dark">
+
+                                <tr>
+                                    <th scope="col">Date</th>
+                                    <th scope="col">User</th>
+                                    <th scope="col">Country</th>
+                                    <th scope="col">Region</th>
+                                    <th scope="col">Risk</th>
+                                    <th scope="col">Confidence</th>
+                                    <th scope="col">Priority</th>
+                                </tr>
+
+                            </thead>
+
+                            <tbody>
+
+                                {% for prediction in recent_predictions %}
+
+                                    <tr>
+
+                                        <td class="text-nowrap">
+
+                                            <div class="fw-semibold">
+                                                {{
+                                                    prediction.prediction_date.strftime(
+                                                        "%d-%m-%Y"
+                                                    )
+                                                }}
+                                            </div>
+
+                                            <small class="text-muted">
+                                                {{
+                                                    prediction.prediction_date.strftime(
+                                                        "%H:%M"
+                                                    )
+                                                }}
+                                            </small>
+
+                                        </td>
+
+                                        <td>
+
+                                            <div class="d-flex align-items-center gap-2">
+
+                                                <div class="admin-user-avatar bg-primary-subtle text-primary">
+
+                                                    {% if prediction.user %}
+
+                                                        {{
+                                                            prediction.user.first_name[0]
+                                                            | upper
+                                                        }}
+
+                                                    {% else %}
+
+                                                        U
+
+                                                    {% endif %}
+
+                                                </div>
+
+                                                <div>
+
+                                                    <div class="fw-semibold">
+
+                                                        {% if prediction.user %}
+
+                                                            {{ prediction.user.first_name }}
+                                                            {{ prediction.user.last_name }}
+
+                                                        {% else %}
+
+                                                            User {{ prediction.user_id }}
+
+                                                        {% endif %}
+
+                                                    </div>
+
+                                                    {% if prediction.user %}
+
+                                                        <small class="text-muted">
+                                                            {{ prediction.user.email }}
+                                                        </small>
+
+                                                    {% endif %}
+
+                                                </div>
+
+                                            </div>
+
+                                        </td>
+
+                                        <td>
+                                            <i class="fa-solid fa-earth-asia text-primary me-2"></i>
+                                            {{ prediction.country }}
+                                        </td>
+
+                                        <td>
+                                            {{ prediction.region }}
+                                        </td>
+
+                                        <td>
+
+                                            {% if prediction.prediction == "High" %}
+
+                                                <span class="badge rounded-pill text-bg-danger">
+                                                    <i class="fa-solid fa-triangle-exclamation me-1"></i>
+                                                    High
+                                                </span>
+
+                                            {% elif prediction.prediction == "Medium" %}
+
+                                                <span class="badge rounded-pill text-bg-warning text-dark">
+                                                    <i class="fa-solid fa-circle-exclamation me-1"></i>
+                                                    Medium
+                                                </span>
+
+                                            {% else %}
+
+                                                <span class="badge rounded-pill text-bg-success">
+                                                    <i class="fa-solid fa-circle-check me-1"></i>
+                                                    Low
+                                                </span>
+
+                                            {% endif %}
+
+                                        </td>
+
+                                        <td style="min-width: 145px;">
+
+                                            <div class="d-flex justify-content-between mb-1">
+
+                                                <span class="fw-semibold">
+                                                    {{
+                                                        "%.2f"|format(
+                                                            prediction.confidence
+                                                        )
+                                                    }}%
+                                                </span>
+
+                                            </div>
+
+                                            <div
+                                                class="progress"
+                                                role="progressbar"
+                                                aria-label="Prediction confidence"
+                                                aria-valuenow="{{ prediction.confidence }}"
+                                                aria-valuemin="0"
+                                                aria-valuemax="100"
+                                                style="height: 7px;"
+                                            >
+                                                <div
+                                                    class="progress-bar dynamic-progress"
+                                                    style="--progress-width: {{ prediction.confidence }}%;"
+                                                ></div>
+                                            </div>
+
+                                        </td>
+
+                                        <td>
+
+                                            {% if prediction.priority == "Urgent" %}
+
+                                                <span class="badge text-bg-danger">
+                                                    Urgent
+                                                </span>
+
+                                            {% elif prediction.priority == "High" %}
+
+                                                <span class="badge text-bg-warning text-dark">
+                                                    High
+                                                </span>
+
+                                            {% elif prediction.priority == "Moderate" %}
+
+                                                <span class="badge text-bg-info">
+                                                    Moderate
+                                                </span>
+
+                                            {% else %}
+
+                                                <span class="badge text-bg-secondary">
+                                                    {{ prediction.priority }}
+                                                </span>
+
+                                            {% endif %}
+
+                                        </td>
+
+                                    </tr>
+
+                                {% endfor %}
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+            {% else %}
+
+                <div class="card-body text-center py-5">
+
+                    <div class="stat-icon mx-auto mb-3">
+                        <i class="fa-solid fa-database"></i>
+                    </div>
+
+                    <h3 class="h5 fw-bold">
+                        No prediction records available
+                    </h3>
+
+                    <p class="text-muted mb-4">
+                        Recent prediction activity will appear here after users
+                        submit assessments.
+                    </p>
+
+                    <a
+                        href="{{ url_for('main.prediction') }}"
+                        class="btn btn-primary"
+                    >
+                        <i class="fa-solid fa-plus me-2"></i>
+                        Create First Prediction
+                    </a>
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+        <!-- Admin Notice -->
+        <div class="alert alert-info mt-4 mb-0">
+
+            <i class="fa-solid fa-shield-halved me-2"></i>
+
+            This dashboard contains administrative system information and should
+            only be accessed by authorized users.
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- Store Jinja values safely as JSON -->
+<script
+    id="dashboard-data"
+    type="application/json"
+>
+    {{ dashboard_data | tojson }}
+</script>
+
+{% endblock %}
+
+{% block extra_js %}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const dataElement = document.getElementById("dashboard-data");
+
+    if (!dataElement) {
+        return;
+    }
+
+    let dashboardData;
+
+    try {
+        dashboardData = JSON.parse(dataElement.textContent);
+    } catch (error) {
+        console.error("Unable to load dashboard chart data:", error);
+        return;
+    }
+
+    const riskCanvas = document.getElementById("riskChart");
+
+    if (
+        riskCanvas &&
+        Array.isArray(dashboardData.risk_counts)
+    ) {
+        new Chart(riskCanvas, {
+            type: "doughnut",
+
+            data: {
+                labels: dashboardData.risk_labels,
+
+                datasets: [
+                    {
+                        data: dashboardData.risk_counts,
+
+                        backgroundColor: [
+                            "#dc3545",
+                            "#ffc107",
+                            "#198754"
+                        ],
+
+                        borderColor: "#ffffff",
+                        borderWidth: 3,
+                        hoverOffset: 8
+                    }
+                ]
+            },
+
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: "65%",
+
+                plugins: {
+                    legend: {
+                        position: "bottom",
+
+                        labels: {
+                            usePointStyle: true,
+                            padding: 20
+                        }
+                    },
+
+                    tooltip: {
+                        callbacks: {
+                            label: function (context) {
+                                return (
+                                    context.label +
+                                    ": " +
+                                    context.parsed +
+                                    " predictions"
+                                );
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    const countryCanvas = document.getElementById("countryChart");
+
+    if (
+        countryCanvas &&
+        Array.isArray(dashboardData.country_counts)
+    ) {
+        new Chart(countryCanvas, {
+            type: "bar",
+
+            data: {
+                labels: dashboardData.country_labels,
+
+                datasets: [
+                    {
+                        label: "Predictions",
+                        data: dashboardData.country_counts,
+                        backgroundColor: "rgba(13, 110, 253, 0.75)",
+                        borderColor: "#0d6efd",
+                        borderWidth: 1,
+                        borderRadius: 6
+                    }
+                ]
+            },
+
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+
+                    tooltip: {
+                        callbacks: {
+                            label: function (context) {
+                                return context.parsed.y + " predictions";
+                            }
+                        }
+                    }
+                },
+
+                scales: {
+                    x: {
+                        grid: {
+                            display: false
+                        },
+
+                        ticks: {
+                            autoSkip: false,
+                            maxRotation: 45,
+                            minRotation: 0
+                        }
+                    },
+
+                    y: {
+                        beginAtZero: true,
+
+                        ticks: {
+                            precision: 0,
+                            stepSize: 1
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+});
+</script>
+
+{% endblock %}

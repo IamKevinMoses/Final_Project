@@ -1,0 +1,866 @@
+{% extends "base.html" %}
+
+{% block title %}
+Prediction Details | AquaSafe AI
+{% endblock %}
+
+{% block extra_css %}
+
+<style>
+    .pdf-only {
+        display: none;
+    }
+
+    .detail-value {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--bs-dark);
+        margin-bottom: 0;
+    }
+
+    .detail-label {
+        color: var(--bs-secondary-color);
+        font-size: 0.875rem;
+        margin-bottom: 0.35rem;
+    }
+
+    .metric-card {
+        height: 100%;
+        border: 1px solid var(--bs-border-color);
+        border-radius: 0.75rem;
+        padding: 1.25rem;
+        background: var(--bs-light);
+    }
+
+    .recommendation-number {
+        width: 32px;
+        height: 32px;
+        min-width: 32px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        font-weight: 700;
+    }
+
+    @media print {
+        @page {
+            size: A4;
+            margin: 15mm;
+        }
+
+        .pdf-only {
+            display: block !important;
+        }
+
+        body {
+            background: #ffffff !important;
+            color: #000000 !important;
+            font-size: 11pt;
+        }
+
+        nav,
+        header,
+        footer,
+        .print-hide {
+            display: none !important;
+        }
+
+        main,
+        section,
+        .container {
+            width: 100% !important;
+            max-width: 100% !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+
+        .card,
+        .metric-card,
+        .alert {
+            box-shadow: none !important;
+            background: #ffffff !important;
+            border-color: #cccccc !important;
+        }
+
+        .card {
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+
+        .card-body,
+        .card-header {
+            padding: 12px !important;
+        }
+
+        .mb-4 {
+            margin-bottom: 12px !important;
+        }
+
+        .table-responsive {
+            overflow: visible !important;
+        }
+
+        table {
+            page-break-inside: avoid;
+        }
+
+        h1,
+        h2,
+        h3 {
+            page-break-after: avoid;
+        }
+
+        a {
+            color: #000000 !important;
+            text-decoration: none !important;
+        }
+
+        .progress {
+            border: 1px solid #999999;
+        }
+    }
+</style>
+
+{% endblock %}
+
+{% block content %}
+
+<section class="py-5">
+
+    <div class="container">
+
+        <!-- Page Header -->
+        <div class="page-header d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
+
+            <div>
+
+                <h1 class="page-title">
+                    Prediction Details
+                </h1>
+
+                <p class="page-subtitle">
+                    Complete information for this waterborne disease risk assessment.
+                </p>
+
+                <div class="pdf-only mt-3">
+
+                    <p class="fw-bold mb-1">
+                        AquaSafe AI — Waterborne Disease Risk Prediction Report
+                    </p>
+
+                    <p class="mb-1">
+                        Report ID: {{ prediction.id }}
+                    </p>
+
+                    <p class="mb-0">
+                        Prediction Date:
+                        {{ prediction.prediction_date.strftime("%d %B %Y, %H:%M") }}
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="d-flex flex-column flex-sm-row gap-2 print-hide">
+
+                <button
+                    type="button"
+                    onclick="window.print()"
+                    class="btn btn-success"
+                >
+                    <i class="fa-solid fa-file-pdf me-2"></i>
+                    Download PDF
+                </button>
+
+                <a
+                    href="{{ url_for('main.prediction_history') }}"
+                    class="btn btn-outline-secondary"
+                >
+                    <i class="fa-solid fa-clock-rotate-left me-2"></i>
+                    Back to History
+                </a>
+
+                <a
+                    href="{{ url_for('main.prediction') }}"
+                    class="btn btn-primary"
+                >
+                    <i class="fa-solid fa-plus me-2"></i>
+                    New Prediction
+                </a>
+
+            </div>
+
+        </div>
+
+        <!-- Prediction Result -->
+        <div class="card mb-4">
+
+            <div class="card-header bg-white">
+
+                <h2 class="h5 fw-bold mb-1">
+                    <i class="fa-solid fa-chart-line text-primary me-2"></i>
+                    Prediction Result
+                </h2>
+
+                <p class="text-muted small mb-0">
+                    Summary of the model output and recommended response priority.
+                </p>
+
+            </div>
+
+            <div class="card-body">
+
+                <div class="row g-4">
+
+                    <div class="col-md-4">
+
+                        <div class="metric-card">
+
+                            <p class="detail-label">
+                                Risk Level
+                            </p>
+
+                            {% if prediction.prediction|lower == "high" %}
+
+                                <span class="badge rounded-pill text-bg-danger fs-6 px-3 py-2">
+                                    <i class="fa-solid fa-triangle-exclamation me-2"></i>
+                                    High Risk
+                                </span>
+
+                            {% elif prediction.prediction|lower == "medium" %}
+
+                                <span class="badge rounded-pill text-bg-warning text-dark fs-6 px-3 py-2">
+                                    <i class="fa-solid fa-circle-exclamation me-2"></i>
+                                    Medium Risk
+                                </span>
+
+                            {% else %}
+
+                                <span class="badge rounded-pill text-bg-success fs-6 px-3 py-2">
+                                    <i class="fa-solid fa-circle-check me-2"></i>
+                                    Low Risk
+                                </span>
+
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-4">
+
+                        <div class="metric-card">
+
+                            <p class="detail-label">
+                                Confidence
+                            </p>
+
+                            <p class="display-6 fw-bold mb-2">
+                                {{ "%.2f"|format(prediction.confidence) }}%
+                            </p>
+
+                            <div
+                                class="progress"
+                                role="progressbar"
+                                aria-label="Prediction confidence"
+                                aria-valuenow="{{ prediction.confidence }}"
+                                aria-valuemin="0"
+                                aria-valuemax="100"
+                                style="height: 10px;"
+                            >
+                                <div
+                                    class="progress-bar dynamic-progress"
+                                    style="--progress-width: {{ prediction.confidence }}%;"
+                                ></div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-4">
+
+                        <div class="metric-card">
+
+                            <p class="detail-label">
+                                Priority
+                            </p>
+
+                            <p class="detail-value mb-2">
+                                {{ prediction.priority }}
+                            </p>
+
+                            {% if prediction.priority == "Urgent" %}
+
+                                <span class="badge text-bg-danger">
+                                    Immediate attention
+                                </span>
+
+                            {% elif prediction.priority == "High" %}
+
+                                <span class="badge text-bg-warning text-dark">
+                                    High attention
+                                </span>
+
+                            {% elif prediction.priority == "Moderate" %}
+
+                                <span class="badge text-bg-info">
+                                    Monitor closely
+                                </span>
+
+                            {% else %}
+
+                                <span class="badge text-bg-secondary">
+                                    Standard monitoring
+                                </span>
+
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Location Information -->
+        <div class="card mb-4">
+
+            <div class="card-header bg-white">
+
+                <h2 class="h5 fw-bold mb-0">
+                    <i class="fa-solid fa-location-dot text-primary me-2"></i>
+                    Location Information
+                </h2>
+
+            </div>
+
+            <div class="card-body">
+
+                <div class="row g-4">
+
+                    <div class="col-md-4">
+
+                        <p class="detail-label">
+                            Country
+                        </p>
+
+                        <p class="detail-value">
+                            {{ prediction.country }}
+                        </p>
+
+                    </div>
+
+                    <div class="col-md-4">
+
+                        <p class="detail-label">
+                            Region
+                        </p>
+
+                        <p class="detail-value">
+                            {{ prediction.region }}
+                        </p>
+
+                    </div>
+
+                    <div class="col-md-4">
+
+                        <p class="detail-label">
+                            Prediction Date
+                        </p>
+
+                        <p class="detail-value fs-6">
+                            {{ prediction.prediction_date.strftime("%d %B %Y, %H:%M") }}
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Water Source Information -->
+        <div class="card mb-4">
+
+            <div class="card-header bg-white">
+
+                <h2 class="h5 fw-bold mb-0">
+                    <i class="fa-solid fa-faucet-drip text-primary me-2"></i>
+                    Water Source Information
+                </h2>
+
+            </div>
+
+            <div class="card-body">
+
+                <div class="row g-4">
+
+                    <div class="col-md-6">
+
+                        <div class="metric-card">
+
+                            <p class="detail-label">
+                                Water Source Type
+                            </p>
+
+                            <p class="detail-value">
+                                {{ prediction.water_source }}
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-6">
+
+                        <div class="metric-card">
+
+                            <p class="detail-label">
+                                Water Treatment Method
+                            </p>
+
+                            <p class="detail-value">
+                                {{ prediction.treatment_method }}
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Water Quality Measurements -->
+        <div class="card mb-4">
+
+            <div class="card-header bg-white">
+
+                <h2 class="h5 fw-bold mb-1">
+                    <i class="fa-solid fa-flask-vial text-primary me-2"></i>
+                    Water Quality Measurements
+                </h2>
+
+                <p class="text-muted small mb-0">
+                    Submitted physical, chemical, and microbiological measurements.
+                </p>
+
+            </div>
+
+            <div class="card-body p-0">
+
+                <div class="table-responsive">
+
+                    <table class="table table-hover align-middle mb-0">
+
+                        <thead class="table-light">
+
+                            <tr>
+                                <th scope="col">Measurement</th>
+                                <th scope="col">Value</th>
+                                <th scope="col">Unit</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            <tr>
+                                <td>Contaminant Level</td>
+                                <td class="fw-semibold">{{ prediction.contaminant_level }}</td>
+                                <td class="text-muted">Index</td>
+                            </tr>
+
+                            <tr>
+                                <td>pH</td>
+                                <td class="fw-semibold">{{ prediction.ph }}</td>
+                                <td class="text-muted">pH scale</td>
+                            </tr>
+
+                            <tr>
+                                <td>Turbidity</td>
+                                <td class="fw-semibold">{{ prediction.turbidity }}</td>
+                                <td class="text-muted">NTU</td>
+                            </tr>
+
+                            <tr>
+                                <td>Dissolved Oxygen</td>
+                                <td class="fw-semibold">{{ prediction.dissolved_oxygen }}</td>
+                                <td class="text-muted">mg/L</td>
+                            </tr>
+
+                            <tr>
+                                <td>Nitrate</td>
+                                <td class="fw-semibold">{{ prediction.nitrate_level }}</td>
+                                <td class="text-muted">mg/L</td>
+                            </tr>
+
+                            <tr>
+                                <td>Lead</td>
+                                <td class="fw-semibold">{{ prediction.lead_concentration }}</td>
+                                <td class="text-muted">µg/L</td>
+                            </tr>
+
+                            <tr>
+                                <td>Bacteria Count</td>
+                                <td class="fw-semibold">{{ prediction.bacteria_count }}</td>
+                                <td class="text-muted">CFU/mL</td>
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Environmental Factors -->
+        <div class="card mb-4">
+
+            <div class="card-header bg-white">
+
+                <h2 class="h5 fw-bold mb-0">
+                    <i class="fa-solid fa-cloud-sun-rain text-primary me-2"></i>
+                    Environmental Factors
+                </h2>
+
+            </div>
+
+            <div class="card-body">
+
+                <div class="row g-4">
+
+                    <div class="col-md-4">
+
+                        <div class="metric-card">
+
+                            <p class="detail-label">
+                                Annual Rainfall
+                            </p>
+
+                            <p class="detail-value">
+                                {{ prediction.rainfall }}
+                                <span class="fs-6 fw-normal text-muted">mm</span>
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-4">
+
+                        <div class="metric-card">
+
+                            <p class="detail-label">
+                                Temperature
+                            </p>
+
+                            <p class="detail-value">
+                                {{ prediction.temperature }}
+                                <span class="fs-6 fw-normal text-muted">°C</span>
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-4">
+
+                        <div class="metric-card">
+
+                            <p class="detail-label">
+                                Population Density
+                            </p>
+
+                            <p class="detail-value">
+                                {{ prediction.population_density }}
+                                <span class="fs-6 fw-normal text-muted">people/km²</span>
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Socioeconomic Indicators -->
+        <div class="card mb-4">
+
+            <div class="card-header bg-white">
+
+                <h2 class="h5 fw-bold mb-0">
+                    <i class="fa-solid fa-people-group text-primary me-2"></i>
+                    Socioeconomic and Public Health Indicators
+                </h2>
+
+            </div>
+
+            <div class="card-body">
+
+                <div class="row g-4">
+
+                    <div class="col-md-6 col-lg-4">
+
+                        <div class="metric-card">
+
+                            <p class="detail-label">
+                                Clean Water Access
+                            </p>
+
+                            <p class="detail-value">
+                                {{ prediction.clean_water_access }}%
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-6 col-lg-4">
+
+                        <div class="metric-card">
+
+                            <p class="detail-label">
+                                Healthcare Access
+                            </p>
+
+                            <p class="detail-value">
+                                {{ prediction.healthcare_access }}%
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-6 col-lg-4">
+
+                        <div class="metric-card">
+
+                            <p class="detail-label">
+                                Sanitation Coverage
+                            </p>
+
+                            <p class="detail-value">
+                                {{ prediction.sanitation_coverage }}%
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-6 col-lg-4">
+
+                        <div class="metric-card">
+
+                            <p class="detail-label">
+                                Urbanization
+                            </p>
+
+                            <p class="detail-value">
+                                {{ prediction.urbanization }}%
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-6 col-lg-4">
+
+                        <div class="metric-card">
+
+                            <p class="detail-label">
+                                GDP Per Capita
+                            </p>
+
+                            <p class="detail-value">
+                                ${{ "%.2f"|format(prediction.gdp_per_capita) }}
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-6 col-lg-4">
+
+                        <div class="metric-card">
+
+                            <p class="detail-label">
+                                Infant Mortality Rate
+                            </p>
+
+                            <p class="detail-value">
+                                {{ prediction.infant_mortality_rate }}
+                            </p>
+
+                            <small class="text-muted">
+                                Per 1,000 live births
+                            </small>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Risk Assessment Guidance -->
+        <div class="card mb-4">
+
+            <div class="card-header bg-white">
+
+                <h2 class="h5 fw-bold mb-1">
+                    <i class="fa-solid fa-shield-heart text-primary me-2"></i>
+                    Risk Assessment Guidance
+                </h2>
+
+                <p class="text-muted small mb-0">
+                    Recommended actions generated from the submitted assessment.
+                </p>
+
+            </div>
+
+            <div class="card-body">
+
+                <div class="alert alert-primary">
+
+                    <div class="d-flex align-items-start">
+
+                        <i class="fa-solid fa-flag me-3 mt-1"></i>
+
+                        <div>
+
+                            <strong class="d-block">
+                                Recommended Priority
+                            </strong>
+
+                            <span>
+                                {{ recommendations.priority }}
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="mb-4">
+
+                    <h3 class="h6 fw-bold mb-3">
+                        Key Risk Factors
+                    </h3>
+
+                    {% if recommendations.key_factors %}
+
+                        <div class="list-group">
+
+                            {% for factor in recommendations.key_factors %}
+
+                                <div class="list-group-item d-flex align-items-start">
+
+                                    <i class="fa-solid fa-circle-exclamation text-danger me-3 mt-1"></i>
+
+                                    <span>
+                                        {{ factor }}
+                                    </span>
+
+                                </div>
+
+                            {% endfor %}
+
+                        </div>
+
+                    {% else %}
+
+                        <div class="alert alert-success mb-0">
+
+                            <i class="fa-solid fa-circle-check me-2"></i>
+
+                            No major risk factors were identified from the submitted values.
+
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+                <div>
+
+                    <h3 class="h6 fw-bold mb-3">
+                        Recommended Actions
+                    </h3>
+
+                    {% if recommendations.recommendations %}
+
+                        <div class="d-flex flex-column gap-3">
+
+                            {% for item in recommendations.recommendations %}
+
+                                <div class="d-flex align-items-start border rounded-3 p-3 bg-light">
+
+                                    <span class="recommendation-number bg-primary-subtle text-primary me-3">
+                                        {{ loop.index }}
+                                    </span>
+
+                                    <span class="pt-1">
+                                        {{ item }}
+                                    </span>
+
+                                </div>
+
+                            {% endfor %}
+
+                        </div>
+
+                    {% else %}
+
+                        <p class="text-muted mb-0">
+                            No recommendations are available.
+                        </p>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Disclaimer -->
+        <div class="alert alert-info mb-0">
+
+            <h3 class="h6 fw-bold">
+                <i class="fa-solid fa-circle-info me-2"></i>
+                Decision Support Notice
+            </h3>
+
+            <p class="small mb-0">
+                This prediction is generated by a machine-learning model and
+                should be used as a decision-support tool. It should not replace
+                laboratory testing, professional medical advice, or an official
+                public-health assessment.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

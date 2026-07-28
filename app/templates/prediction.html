@@ -1,0 +1,949 @@
+{% extends "base.html" %}
+
+{% block title %}Disease Risk Prediction{% endblock %}
+
+{% block content %}
+
+<div class="container py-5">
+
+    <div class="text-center mb-5">
+        <h1 class="fw-bold">
+            Waterborne Disease Risk Prediction
+        </h1>
+
+        <p class="text-muted">
+            Enter the environmental, water quality, and socioeconomic values
+            to estimate the disease risk level.
+        </p>
+    </div>
+
+{% if validation_errors %}
+<div class="alert alert-danger shadow-sm mb-4">
+    <strong>Please correct the following values:</strong>
+
+    <ul class="mb-0 mt-2">
+        {% for validation_error in validation_errors %}
+        <li>{{ validation_error }}</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+{% if error %}
+<div class="alert alert-danger shadow-sm mb-4">
+    <strong>Unable to complete prediction.</strong>
+    <br>
+    {{ error }}
+</div>
+{% endif %}
+
+    <form
+        method="POST"
+        action="{{ url_for('main.prediction') }}"
+        id="predictionForm"
+    >
+
+        <!-- Location Information -->
+        <div class="card shadow-sm mb-4">
+
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">
+                    Location Information
+                </h4>
+            </div>
+
+            <div class="card-body">
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+
+                        <label
+                            for="country"
+                            class="form-label"
+                        >
+                            Country
+                        </label>
+
+                        <select
+                            id="country"
+                            name="country"
+                            class="form-select"
+                            required
+                        >
+                            <option value="">
+                                Select country
+                            </option>
+
+                            {% for country in [
+                                "Bangladesh",
+                                "Brazil",
+                                "China",
+                                "Ethiopia",
+                                "India",
+                                "Indonesia",
+                                "Mexico",
+                                "Nigeria",
+                                "Pakistan",
+                                "USA"
+                            ] %}
+
+                            <option
+                                value="{{ country }}"
+                                {% if form_data and form_data.get("country") == country %}
+                                    selected
+                                {% endif %}
+                            >
+                                {{ country }}
+                            </option>
+
+                            {% endfor %}
+                        </select>
+
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+
+                        <label
+                            for="region"
+                            class="form-label"
+                        >
+                            Region
+                        </label>
+
+                        <select
+                            id="region"
+                            name="region"
+                            class="form-select"
+                            required
+                        >
+                            <option value="">
+                                Select region
+                            </option>
+
+                            {% for region in [
+                                "Central",
+                                "East",
+                                "North",
+                                "South",
+                                "West"
+                            ] %}
+
+                            <option
+                                value="{{ region }}"
+                                {% if form_data and form_data.get("region") == region %}
+                                    selected
+                                {% endif %}
+                            >
+                                {{ region }}
+                            </option>
+
+                            {% endfor %}
+                        </select>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Water Source Information -->
+        <div class="card shadow-sm mb-4">
+
+            <div class="card-header bg-info text-dark">
+                <h4 class="mb-0">
+                    Water Source Information
+                </h4>
+            </div>
+
+            <div class="card-body">
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+
+                        <label
+                            for="water_source_type"
+                            class="form-label"
+                        >
+                            Water Source
+                        </label>
+
+                        <select
+                            id="water_source_type"
+                            name="water_source_type"
+                            class="form-select"
+                            required
+                        >
+                            <option value="">
+                                Select source
+                            </option>
+
+                            {% for source in [
+                                "Lake",
+                                "Pond",
+                                "River",
+                                "Spring",
+                                "Tap",
+                                "Well"
+                            ] %}
+
+                            <option
+                                value="{{ source }}"
+                                {% if form_data and form_data.get("water_source_type") == source %}
+                                    selected
+                                {% endif %}
+                            >
+                                {{ source }}
+                            </option>
+
+                            {% endfor %}
+                        </select>
+
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+
+                        <label
+                            for="water_treatment_method"
+                            class="form-label"
+                        >
+                            Water Treatment Method
+                        </label>
+
+                        <select
+                            id="water_treatment_method"
+                            name="water_treatment_method"
+                            class="form-select"
+                            required
+                        >
+                            <option value="">
+                                Select treatment
+                            </option>
+
+                            {% for method in [
+                                "Boiling",
+                                "Chlorination",
+                                "Filtration",
+                                "None"
+                            ] %}
+
+                            <option
+                                value="{{ method }}"
+                                {% if form_data and form_data.get("water_treatment_method") == method %}
+                                    selected
+                                {% endif %}
+                            >
+                                {{ method }}
+                            </option>
+
+                            {% endfor %}
+                        </select>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Water Quality Parameters -->
+        <div class="card shadow-sm mb-4">
+
+            <div class="card-header bg-warning">
+                <h4 class="mb-0">
+                    Water Quality Parameters
+                </h4>
+            </div>
+
+            <div class="card-body">
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+
+                        <label
+                            for="contaminant_level"
+                            class="form-label"
+                        >
+                            Contaminant Level
+                        </label>
+
+                        <div class="input-group">
+
+                            <input
+                                type="number"
+                                id="contaminant_level"
+                                name="contaminant_level"
+                                class="form-control"
+                                min="0"
+                                step="0.01"
+                                value="{{ form_data.get('contaminant_level', '') if form_data else '' }}"
+                                required
+                            >
+
+                            <span class="input-group-text">
+                                index
+                            </span>
+
+                        </div>
+
+                        <div class="form-text">
+                            Enter a non-negative contamination measurement.
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+
+                        <label
+                            for="ph"
+                            class="form-label"
+                        >
+                            pH Level
+                        </label>
+
+                        <input
+                            type="number"
+                            id="ph"
+                            name="ph"
+                            class="form-control"
+                            min="0"
+                            max="14"
+                            step="0.01"
+                            value="{{ form_data.get('ph', '') if form_data else '' }}"
+                            required
+                        >
+
+                        <div class="form-text">
+                            Valid pH values are between 0 and 14.
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+
+                        <label
+                            for="turbidity"
+                            class="form-label"
+                        >
+                            Turbidity
+                        </label>
+
+                        <div class="input-group">
+
+                            <input
+                                type="number"
+                                id="turbidity"
+                                name="turbidity"
+                                class="form-control"
+                                min="0"
+                                step="0.01"
+                                value="{{ form_data.get('turbidity', '') if form_data else '' }}"
+                                required
+                            >
+
+                            <span class="input-group-text">
+                                NTU
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+
+                        <label
+                            for="dissolved_oxygen"
+                            class="form-label"
+                        >
+                            Dissolved Oxygen
+                        </label>
+
+                        <div class="input-group">
+
+                            <input
+                                type="number"
+                                id="dissolved_oxygen"
+                                name="dissolved_oxygen"
+                                class="form-control"
+                                min="0"
+                                step="0.01"
+                                value="{{ form_data.get('dissolved_oxygen', '') if form_data else '' }}"
+                                required
+                            >
+
+                            <span class="input-group-text">
+                                mg/L
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+
+                        <label
+                            for="nitrate"
+                            class="form-label"
+                        >
+                            Nitrate
+                        </label>
+
+                        <div class="input-group">
+
+                            <input
+                                type="number"
+                                id="nitrate"
+                                name="nitrate"
+                                class="form-control"
+                                min="0"
+                                step="0.01"
+                                value="{{ form_data.get('nitrate', '') if form_data else '' }}"
+                                required
+                            >
+
+                            <span class="input-group-text">
+                                mg/L
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+
+                        <label
+                            for="lead"
+                            class="form-label"
+                        >
+                            Lead
+                        </label>
+
+                        <div class="input-group">
+
+                            <input
+                                type="number"
+                                id="lead"
+                                name="lead"
+                                class="form-control"
+                                min="0"
+                                step="0.001"
+                                value="{{ form_data.get('lead', '') if form_data else '' }}"
+                                required
+                            >
+
+                            <span class="input-group-text">
+                                mg/L
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+
+                        <label
+                            for="bacteria_count"
+                            class="form-label"
+                        >
+                            Bacteria Count
+                        </label>
+
+                        <div class="input-group">
+
+                            <input
+                                type="number"
+                                id="bacteria_count"
+                                name="bacteria_count"
+                                class="form-control"
+                                min="0"
+                                step="1"
+                                value="{{ form_data.get('bacteria_count', '') if form_data else '' }}"
+                                required
+                            >
+
+                            <span class="input-group-text">
+                                CFU/mL
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Environmental Factors -->
+        <div class="card shadow-sm mb-4">
+
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0">
+                    Environmental Factors
+                </h4>
+            </div>
+
+            <div class="card-body">
+                <div class="row">
+
+                    <div class="col-md-4 mb-3">
+
+                        <label
+                            for="rainfall"
+                            class="form-label"
+                        >
+                            Rainfall
+                        </label>
+
+                        <div class="input-group">
+
+                            <input
+                                type="number"
+                                id="rainfall"
+                                name="rainfall"
+                                class="form-control"
+                                min="0"
+                                step="0.01"
+                                value="{{ form_data.get('rainfall', '') if form_data else '' }}"
+                                required
+                            >
+
+                            <span class="input-group-text">
+                                mm
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+
+                        <label
+                            for="temperature"
+                            class="form-label"
+                        >
+                            Temperature
+                        </label>
+
+                        <div class="input-group">
+
+                            <input
+                                type="number"
+                                id="temperature"
+                                name="temperature"
+                                class="form-control"
+                                min="-50"
+                                max="60"
+                                step="0.01"
+                                value="{{ form_data.get('temperature', '') if form_data else '' }}"
+                                required
+                            >
+
+                            <span class="input-group-text">
+                                °C
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+
+                        <label
+                            for="population_density"
+                            class="form-label"
+                        >
+                            Population Density
+                        </label>
+
+                        <div class="input-group">
+
+                            <input
+                                type="number"
+                                id="population_density"
+                                name="population_density"
+                                class="form-control"
+                                min="0"
+                                step="0.01"
+                                value="{{ form_data.get('population_density', '') if form_data else '' }}"
+                                required
+                            >
+
+                            <span class="input-group-text">
+                                people/km²
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Socioeconomic Indicators -->
+        <div class="card shadow-sm mb-4">
+
+            <div class="card-header bg-secondary text-white">
+                <h4 class="mb-0">
+                    Socioeconomic Indicators
+                </h4>
+            </div>
+
+            <div class="card-body">
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+
+                        <label
+                            for="clean_water_access"
+                            class="form-label"
+                        >
+                            Clean Water Access
+                        </label>
+
+                        <div class="input-group">
+
+                            <input
+                                type="number"
+                                id="clean_water_access"
+                                name="clean_water_access"
+                                class="form-control"
+                                min="0"
+                                max="100"
+                                step="0.01"
+                                value="{{ form_data.get('clean_water_access', '') if form_data else '' }}"
+                                required
+                            >
+
+                            <span class="input-group-text">
+                                %
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+
+                        <label
+                            for="infant_mortality_rate"
+                            class="form-label"
+                        >
+                            Infant Mortality Rate
+                        </label>
+
+                        <div class="input-group">
+
+                            <input
+                                type="number"
+                                id="infant_mortality_rate"
+                                name="infant_mortality_rate"
+                                class="form-control"
+                                min="0"
+                                step="0.01"
+                                value="{{ form_data.get('infant_mortality_rate', '') if form_data else '' }}"
+                                required
+                            >
+
+                            <span class="input-group-text">
+                                per 1,000
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+
+                        <label
+                            for="gdp_per_capita"
+                            class="form-label"
+                        >
+                            GDP Per Capita
+                        </label>
+
+                        <div class="input-group">
+
+                            <input
+                                type="number"
+                                id="gdp_per_capita"
+                                name="gdp_per_capita"
+                                class="form-control"
+                                min="0"
+                                step="0.01"
+                                value="{{ form_data.get('gdp_per_capita', '') if form_data else '' }}"
+                                required
+                            >
+
+                            <span class="input-group-text">
+                                USD
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+
+                        <label
+                            for="healthcare_access"
+                            class="form-label"
+                        >
+                            Healthcare Access
+                        </label>
+
+                        <div class="input-group">
+
+                            <input
+                                type="number"
+                                id="healthcare_access"
+                                name="healthcare_access"
+                                class="form-control"
+                                min="0"
+                                max="100"
+                                step="0.01"
+                                value="{{ form_data.get('healthcare_access', '') if form_data else '' }}"
+                                required
+                            >
+
+                            <span class="input-group-text">
+                                %
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+
+                        <label
+                            for="urbanization"
+                            class="form-label"
+                        >
+                            Urbanization
+                        </label>
+
+                        <div class="input-group">
+
+                            <input
+                                type="number"
+                                id="urbanization"
+                                name="urbanization"
+                                class="form-control"
+                                min="0"
+                                max="100"
+                                step="0.01"
+                                value="{{ form_data.get('urbanization', '') if form_data else '' }}"
+                                required
+                            >
+
+                            <span class="input-group-text">
+                                %
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+
+                        <label
+                            for="sanitation_coverage"
+                            class="form-label"
+                        >
+                            Sanitation Coverage
+                        </label>
+
+                        <div class="input-group">
+
+                            <input
+                                type="number"
+                                id="sanitation_coverage"
+                                name="sanitation_coverage"
+                                class="form-control"
+                                min="0"
+                                max="100"
+                                step="0.01"
+                                value="{{ form_data.get('sanitation_coverage', '') if form_data else '' }}"
+                                required
+                            >
+
+                            <span class="input-group-text">
+                                %
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="d-grid gap-2 mb-5">
+
+            <button
+                type="submit"
+                id="predictButton"
+                class="btn btn-primary btn-lg"
+            >
+                <span
+                    id="predictSpinner"
+                    class="spinner-border spinner-border-sm me-2 d-none"
+                    role="status"
+                    aria-hidden="true"
+                ></span>
+
+                <span id="predictButtonText">
+                    Predict Disease Risk
+                </span>
+            </button>
+
+        </div>
+
+    </form>
+
+    {% if result %}
+
+        {% if result["prediction"] == "High" %}
+            {% set alert_class = "alert-danger" %}
+        {% elif result["prediction"] == "Medium" %}
+            {% set alert_class = "alert-warning" %}
+        {% else %}
+            {% set alert_class = "alert-success" %}
+        {% endif %}
+
+        <div class="card shadow mb-5">
+
+            <div class="card-header">
+                <h3 class="mb-0">
+                    Prediction Result
+                </h3>
+            </div>
+
+            <div class="card-body">
+
+                <div class="alert {{ alert_class }} text-center">
+
+                    <h2 class="fw-bold">
+                        {{ result["prediction"] }} Risk
+                    </h2>
+
+                    <p class="mb-0">
+                        Confidence:
+                        <strong>
+                            {{ result["confidence"] }}%
+                        </strong>
+                    </p>
+
+                </div>
+
+                <h5 class="mt-4">
+                    Class Probabilities
+                </h5>
+
+                {% for class_name, probability in result["probabilities"].items() %}
+
+                <div class="mb-3">
+
+                    <div class="d-flex justify-content-between">
+                        <span>{{ class_name }}</span>
+                        <span>{{ probability }}%</span>
+                    </div>
+
+                    <div class="progress">
+
+                        <div
+                            class="progress-bar dynamic-progress"
+                            role="progressbar"
+                            style="--progress-width: {{ probability | float }}%;"
+                            aria-valuenow="{{ probability }}"
+                            aria-valuemin="0"
+                            aria-valuemax="100"
+                        >
+                            {{ probability }}%
+                        </div>
+
+                    </div>
+
+                </div>
+
+                {% endfor %}
+
+                <hr class="my-4">
+
+                <h4>
+                    Priority
+                </h4>
+
+                <div class="alert alert-secondary">
+                    <strong>
+                        {{ result["priority"] }}
+                    </strong>
+                </div>
+
+                <h4 class="mt-4">
+                    Key Factors
+                </h4>
+
+                {% if result["key_factors"] %}
+
+                <ul class="list-group mb-4">
+
+                    {% for factor in result["key_factors"] %}
+
+                    <li class="list-group-item">
+                        {{ factor }}
+                    </li>
+
+                    {% endfor %}
+
+                </ul>
+
+                {% else %}
+
+                <p class="text-muted">
+                    No major additional risk factors were identified.
+                </p>
+
+                {% endif %}
+
+                <h4 class="mt-4">
+                    Recommended Actions
+                </h4>
+
+                <ul class="list-group mb-3">
+
+                    {% for recommendation in result["recommendations"] %}
+
+                    <li class="list-group-item">
+                        {{ recommendation }}
+                    </li>
+
+                    {% endfor %}
+
+                </ul>
+
+            </div>
+        </div>
+
+    {% endif %}
+
+</div>
+
+<script>
+    const predictionForm = document.getElementById("predictionForm");
+    const predictButton = document.getElementById("predictButton");
+    const predictSpinner = document.getElementById("predictSpinner");
+    const predictButtonText = document.getElementById("predictButtonText");
+
+    predictionForm.addEventListener("submit", function () {
+        if (!predictionForm.checkValidity()) {
+            return;
+        }
+
+        predictButton.disabled = true;
+        predictSpinner.classList.remove("d-none");
+        predictButtonText.textContent = "Analyzing data...";
+    });
+</script>
+
+{% endblock %}

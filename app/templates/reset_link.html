@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+
+{% block title %}
+Password Reset Link | AquaSafe AI
+{% endblock %}
+
+{% block content %}
+
+<section class="auth-section">
+
+    <div class="container">
+
+        <div class="auth-card" style="max-width: 560px;">
+
+            <div class="card">
+
+                <div class="card-body p-4 p-md-5">
+
+                    <div class="text-center mb-4">
+
+                        <div class="auth-icon">
+                            <i class="fa-solid fa-envelope-open-text"></i>
+                        </div>
+
+                        <h1 class="h3 fw-bold mb-2">
+                            Password Reset Request
+                        </h1>
+
+                        <p class="text-muted mb-0">
+                            Review the password reset information below.
+                        </p>
+
+                    </div>
+
+                    {% if reset_url %}
+
+                        <div class="alert alert-success">
+
+                            <div class="d-flex align-items-start">
+
+                                <i class="fa-solid fa-circle-check me-3 mt-1"></i>
+
+                                <div>
+                                    <strong>
+                                        Reset link generated successfully.
+                                    </strong>
+
+                                    <div class="mt-1">
+                                        A secure password reset link has been
+                                        created for your account.
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="p-3 rounded bg-light border mb-4">
+
+                            <div class="d-flex align-items-start">
+
+                                <i class="fa-solid fa-laptop-code text-primary me-3 mt-1"></i>
+
+                                <div>
+
+                                    <strong class="d-block mb-1">
+                                        Local development mode
+                                    </strong>
+
+                                    <p class="text-muted mb-0 small">
+                                        In a production system, this link would
+                                        be sent to the registered email address.
+                                        It is displayed here only for testing.
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <a
+                            href="{{ reset_url }}"
+                            class="btn btn-primary btn-lg w-100"
+                        >
+                            <i class="fa-solid fa-key me-2"></i>
+                            Reset My Password
+                        </a>
+
+                        <div class="text-center mt-3">
+
+                            <small class="text-muted">
+
+                                <i class="fa-solid fa-clock me-1"></i>
+
+                                This link expires in 30 minutes and becomes
+                                invalid after the password is changed.
+
+                            </small>
+
+                        </div>
+
+                    {% else %}
+
+                        <div class="alert alert-info mb-0">
+
+                            <div class="d-flex align-items-start">
+
+                                <i class="fa-solid fa-circle-info me-3 mt-1"></i>
+
+                                <div>
+
+                                    <strong>
+                                        Request received.
+                                    </strong>
+
+                                    <div class="mt-1">
+                                        If an account exists for that email
+                                        address, password reset instructions
+                                        will be generated.
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    {% endif %}
+
+                    <div class="text-center mt-4">
+
+                        <a
+                            href="{{ url_for('main.login') }}"
+                            class="fw-semibold text-decoration-none"
+                        >
+                            <i class="fa-solid fa-arrow-left me-1"></i>
+                            Return to Login
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <p class="text-center text-muted small mt-3 mb-0">
+                Never share your password reset link with another person.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}
