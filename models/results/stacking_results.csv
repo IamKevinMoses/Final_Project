@@ -1,0 +1,2 @@
+Model,Version,Training Accuracy,Testing Accuracy,Precision,Recall,F1-Score,Training Time (s),Generalisation Gap,CV F1-Score
+Stacking Classifier,Tuned,0.9617,0.8517,0.8525,0.8517,0.852,1.5136,0.11,0.8711

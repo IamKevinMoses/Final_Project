@@ -1,0 +1,3 @@
+Model,Training Accuracy,Testing Accuracy,Precision,Recall,F1-Score,Generalisation Gap
+Baseline Decision Tree,1.0,0.7833,0.7833,0.7833,0.783,0.2167
+Tuned Decision Tree,0.8733,0.8083,0.8165,0.8083,0.8108,0.065

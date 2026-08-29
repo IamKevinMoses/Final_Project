@@ -1,5 +1,0 @@
-Model,Training_Accuracy,Testing_Accuracy,Accuracy_Gap,Overfitting_Risk
-Logistic Regression,88.75,86.333,2.4170000000000016,Low
-Decision Tree,93.708,80.666,13.042000000000002,High
-Random Forest,95.7083,85.1667,10.541599999999988,High
-XGBoost,100.0,85.0,15.0,High

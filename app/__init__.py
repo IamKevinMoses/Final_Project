@@ -1,4 +1,6 @@
 # Adding the Flask application factory
+from pathlib import Path
+
 from flask import Flask
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
@@ -14,11 +16,13 @@ def create_app():
 
     app.config["SECRET_KEY"] = "development-secret-key"
 
-    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///../database/project.db"
+    BASE_DIR = Path(__file__).resolve().parent.parent
+    DATABASE_PATH = BASE_DIR / "database" / "project.db"
 
+    app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{DATABASE_PATH.as_posix()}"
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-    # Initialize SQLAlchemy
+    #Initialize SQLAlchemy
     db.init_app(app)
     bcrypt.init_app(app)
     login_manager.init_app(app)
@@ -26,11 +30,11 @@ def create_app():
     # Import models BEFORE creating tables
     from app import models
 
-    # Import routes
+    #Import routes
     from app.routes import main_bp
     app.register_blueprint(main_bp)
 
-    # Create database tables
+    #Create database tables
     with app.app_context():
         db.create_all()
 

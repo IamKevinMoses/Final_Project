@@ -1,0 +1,3 @@
+Model,Training Accuracy,Testing Accuracy,Precision,Recall,F1-Score,Generalisation Gap
+Baseline Random Forest,1.0,0.855,0.8575,0.855,0.8559,0.145
+Tuned Random Forest,1.0,0.855,0.8572,0.855,0.8558,0.145

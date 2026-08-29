@@ -1,0 +1,3 @@
+Model,Training Accuracy,Testing Accuracy,Precision,Recall,F1-Score,Generalisation Gap
+Baseline XGBoost,1.0,0.8367,0.8387,0.8367,0.8375,0.1633
+Tuned XGBoost,0.98,0.84,0.8413,0.84,0.8405,0.14
